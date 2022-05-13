@@ -1,0 +1,39 @@
+services:
+  backend:
+    build: .
+    networks:
+      - network1
+      - network2
+    volumes:
+      - ./actividad:/code  
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:12  
+    volumes:
+      - db-data:/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - network1
+
+  frontend:
+    image: alpine:3.14
+    networks:
+      - network2
+    entrypoint: /bin/sh
+    stdin_open: true
+
+volumes:
+  db-data:
+    driver: local
+
+networks:
+  network1: {}
+  network2: {}
+
+
+
